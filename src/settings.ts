@@ -19,7 +19,7 @@ export function getTestGlob(): string {
 export function getTestRegex(): RegExp {
   const text = getOrDefault("testRegex", "");
   if (text !== "") return new RegExp(text, "gm");
-  return /^\s*function\s+(?:[a-zA-Z][a-zA-Z0-9]*:)?(?<test>[tT]est[a-zA-Z0-9]*)\(\)(?:.*)$/gm;
+  return /^\s*function\s+(?:(?<suite>[a-zA-Z][a-zA-Z0-9]*):)?(?<test>[tT]est[a-zA-Z0-9]*)\(\)(?:.*)$/gm;
 }
 
 export function getTestEncoding(): "ascii" | "utf8" | "utf-8" | "utf16le" | "ucs2" | "ucs-2" | "base64" | "latin1" | "binary" | "hex" | null | undefined {

@@ -81,7 +81,7 @@
           "scope": "resource"
         },
         "luaTestAdapter.testRegex": {
-          "description": "Regex used to find tests. Defaults to /^\\s*function\\s+(?:[a-zA-Z][a-zA-Z0-9]*:)?(?<test>[tT]est[a-zA-Z0-9]*)\\(\\)(?:.*)$/",
+          "description": "Regex used to find tests. Named capture group 'suite' captures the LuaUnit class name (for class methods like 'function MyClass:testFoo()'), and 'test' captures the test function name. Defaults to /^\\s*function\\s+(?:(?<suite>[a-zA-Z][a-zA-Z0-9]*):)?(?<test>[tT]est[a-zA-Z0-9]*)\\(\\)(?:.*)$/",
           "type": "string",
           "scope": "resource"
         },

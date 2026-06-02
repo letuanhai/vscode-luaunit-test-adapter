@@ -13,10 +13,18 @@ const luaUnitSuite: TestSuiteInfo = {
 		children: []
 };
 
+// Maps test ID → the name passed to the LuaUnit CLI (e.g. "TestClass.testFoo" or "testFoo")
+const testRunNames = new Map<string, string>();
+
+export function getTestRunName(id: string): string | undefined {
+	return testRunNames.get(id);
+}
+
 export async function loadTests(): Promise<TestSuiteInfo> {
 	console.log("Loading tests from test files");
 
 	luaUnitSuite.children = [];
+	testRunNames.clear();
 
 	if (!vscode.workspace) {
 		console.error("Failed to find workspace");
@@ -47,35 +55,63 @@ export async function loadTests(): Promise<TestSuiteInfo> {
 			console.error("Failed to find workspaceFolder");
 			continue;
 		}
-		const suiteId = path.relative(workspaceFolder.uri.fsPath, file.fsPath)
+		const fileRelPath = path.relative(workspaceFolder.uri.fsPath, file.fsPath);
 
-		const testSuite: TestSuiteInfo = {
+		const testFileSuite: TestSuiteInfo = {
 			type: "suite",
-			id: suiteId,
-			label: suiteId,
+			id: fileRelPath,
+			label: fileRelPath,
+			file: file.fsPath,
 			children: []
 		};
 
-		luaUnitSuite.children.push(testSuite);
+		luaUnitSuite.children.push(testFileSuite);
 
 		const content = await readFile(file.fsPath, {
 			encoding: testEncoding
 		}) as string;
 
+		// Tracks LuaUnit class suite nodes created within this file
+		const classSuites = new Map<string, TestSuiteInfo>();
+
 		let match: RegExpExecArray | null;
 		do {
 			match = testRegex.exec(content);
 			if (match && match.groups && match.groups["test"]) {
-				console.log("Found test", file.fsPath, match.groups["test"], testId.toString())
+				const className = match.groups["suite"];
+				const testName = match.groups["test"];
+				const id = testId.toString();
+				testId++;
+
+				console.log("Found test", file.fsPath, className ? `${className}:${testName}` : testName, id);
 
 				const test: TestInfo = {
 					type: "test",
-					id: testId.toString(),
-					label: match.groups["test"],
+					id,
+					label: testName,
 					file: file.fsPath
+				};
+
+				if (className) {
+					testRunNames.set(id, `${className}.${testName}`);
+
+					let classSuite = classSuites.get(className);
+					if (!classSuite) {
+						classSuite = {
+							type: "suite",
+							id: `${fileRelPath}::${className}`,
+							label: className,
+							file: file.fsPath,
+							children: []
+						};
+						testFileSuite.children.push(classSuite);
+						classSuites.set(className, classSuite);
+					}
+					classSuite.children.push(test);
+				} else {
+					testRunNames.set(id, testName);
+					testFileSuite.children.push(test);
 				}
-				testSuite.children.push(test);
-				testId++;
 			}
 		} while (match);
 	}
@@ -150,7 +186,8 @@ async function runTest(
 
 	testStatesEmitter.fire(<TestEvent>{ type: "test", test: node.id, state: "running" });
 
-	const lua = child_process.spawnSync(luaExe, [file.fsPath, node.label], {
+	const runName = testRunNames.get(node.id) ?? node.label;
+	const lua = child_process.spawnSync(luaExe, [file.fsPath, runName], {
 		cwd: workspaceFolder.uri.fsPath
 	})
 

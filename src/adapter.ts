@@ -2,7 +2,7 @@ import * as vscode from "vscode";
 import { TestAdapter, TestLoadStartedEvent, TestLoadFinishedEvent, TestRunStartedEvent, TestRunFinishedEvent, TestSuiteEvent, TestEvent, TestSuiteInfo } from "vscode-test-adapter-api";
 import { Log } from "vscode-test-adapter-util";
 import * as settings from "./settings";
-import { loadTests, runTests, findNode } from "./tests";
+import { loadTests, runTests, findNode, getTestRunName } from "./tests";
 
 export class LuaTestAdapter implements TestAdapter {
 
@@ -86,7 +86,7 @@ export class LuaTestAdapter implements TestAdapter {
 				"luaexe": luaExe,
 				"cwd": workspaceFolder.uri.fsPath,
 				"program": file.fsPath,
-				"arg": [node.label],
+				"arg": [node.type === "test" ? (getTestRunName(node.id) ?? node.label) : node.label],
 				"console": "internalConsole",
 				"stopOnEntry": false
 			});
