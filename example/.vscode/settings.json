@@ -1,6 +1,5 @@
 {
   //"luaTestAdapter.luaExe": "C:/Program Files/Lua/lua-5.1.5_Win64_bin/lua5.1.exe",
-  "luaTestAdapter.luaExe": "${workspaceFolder}/libs/lua-5.1.5_Win64_bin/lua5.1.exe",
   "luaTestAdapter.testGlob": "",
   "luaTestAdapter.testRegex": "",
   "luaTestAdapter.testEncoding": "",
