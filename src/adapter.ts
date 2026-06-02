@@ -45,7 +45,7 @@ export class LuaTestAdapter implements TestAdapter {
 	async debug(tests: string[]): Promise<void> {
 		const luaDebugExtensionId = "actboy168.lua-debug";
 		if (!vscode.extensions.getExtension(luaDebugExtensionId)) {
-			const message = `Cannot debug: the "${luaDebugExtensionId}" extension is not installed. Please install it and try again.`;
+			const message = `Cannot debug test: the extension Lua Debug (${luaDebugExtensionId}) is not installed. Please install it and try again.`;
 			this.log.error(message);
 			this.testStatesEmitter.fire(<TestRunStartedEvent>{ type: "started", tests });
 			this.testStatesEmitter.fire(<TestRunFinishedEvent>{ type: "finished" });
@@ -82,7 +82,7 @@ export class LuaTestAdapter implements TestAdapter {
 			vscode.debug.startDebugging(workspaceFolder, {
 				"type": "lua",
 				"request": "launch",
-				"name": "Launch",
+				"name": "Debug Lua test",
 				"luaexe": luaExe,
 				"cwd": workspaceFolder.uri.fsPath,
 				"program": file.fsPath,
