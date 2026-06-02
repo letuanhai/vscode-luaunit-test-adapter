@@ -91,7 +91,7 @@ export async function loadTests(): Promise<TestSuiteInfo> {
 				if (className && !suiteRegex.test(className)) continue;
 
 				// 0-based line number of the function definition
-				const line = content.substring(0, match.index).split("\n").length - 1;
+				const line = content.substring(0, match.index).split("\n").length;
 
 				const id = testId.toString();
 				testId++;
