@@ -3,7 +3,7 @@ import { TestAdapter, TestLoadStartedEvent, TestLoadFinishedEvent, TestRunStarte
 import { Log } from "vscode-test-adapter-util";
 import * as settings from "./settings";
 import { loadTests, runTests, findNode, getTestRunName } from "./tests";
-import { CONFIG_NAMESPACE } from "./config";
+import { CONFIG_NAMESPACE, CONFIG_KEYS } from "./config";
 
 const LOCAL_LUA_DEBUGGER_IDS = new Set([
 	"tomblind.local-lua-debugger-vscode",
@@ -52,7 +52,7 @@ export class LuaTestAdapter implements TestAdapter {
 		const debugExtensionId = settings.getDebugExtension();
 		if (!vscode.extensions.getExtension(debugExtensionId)) {
 			const message = `Cannot debug test: the extension "${debugExtensionId}" is not installed. ` +
-				`Please install it or select a different debug extension in the Lua Test Adapter settings (${CONFIG_NAMESPACE}.debugExtension).`;
+				`Please install it or select a different debug extension in the Lua Test Adapter settings (${CONFIG_NAMESPACE}.${CONFIG_KEYS.debugExtension}).`;
 			this.log.error(message);
 			this.testStatesEmitter.fire(<TestRunStartedEvent>{ type: "started", tests });
 			this.testStatesEmitter.fire(<TestRunFinishedEvent>{ type: "finished" });

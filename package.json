@@ -23,7 +23,9 @@
   "main": "out/main.js",
   "scripts": {
     "clean": "rimraf out *.vsix",
+    "prebuild": "node scripts/patch-package.js",
     "build": "tsc",
+    "prewatch": "node scripts/patch-package.js",
     "watch": "tsc -w",
     "rebuild": "npm run clean && npm run build",
     "package": "vsce package",
